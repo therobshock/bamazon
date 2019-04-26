@@ -27,7 +27,7 @@ function readProducts() {
         
         console.log("ID || Product || Department || Price || Quantity");
         for (var x in res){
-            console.log(res[x].item_id, res[x].product_name,  res[x].department_name, "$" + res[x].price, res[x].stock_quantity);
+            console.log(res[x].item_id, res[x].product_name,  res[x].department_name, "$" + res[x].price, res[x].stock_quantity, res[x].product_sales);
         }
         userSelect();
     });
@@ -134,15 +134,14 @@ function finalizePurch(data, quantity){
         
     console.log("\nUpdating Inventory...\n");
     
-    connection.query("UPDATE products SET ? WHERE ?",
-    [
-        {stock_quantity: stockRemain},
-        {item_id: data.id}
-    ], 
-    function (err, res) {
-        if (err) throw err;
-    })
-    startAgain();
+    connection.query(
+        "UPDATE products SET stock_quantity = ?,  product_sales = ? WHERE item_id = ?",
+        [stockRemain, total.toFixed(2), data.id], 
+        function (err, res) {
+            if (err) throw err;
+            startAgain();
+        }
+    )
 }
 
 function startAgain() {
